@@ -1,16 +1,17 @@
 import * as mongoose from 'mongoose';
 
-export const ProductSchema = new mongoose.Schema({
+export const PriceSchema = new mongoose.Schema({
   title: { type: String},
   description: { type: String },
   price: { type: Number, },
-  filePath: { type: String },
+  fileCount: { type: Number },
 },{ timestamps: true});
 
-export interface Product extends mongoose.Document {
+export interface Price extends mongoose.Document {
   _id: string;
   title: string;
   description: string;
   price: number;
-  filePath: string;
+  fileCount: number;
+  validDays:number;
 }

@@ -1,13 +1,16 @@
 import { Injectable, UnauthorizedException, BadRequestException, ArgumentsHost } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
+import { RegisterCredentialsDto } from './dto/register-credentials.dto';
 import { JwtPayload } from './jwt-payload.interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { TokenVerifyEmail, User, } from './user.model';
 import { v1 as uuidv1 } from 'uuid';
 import { SendEmailMiddleware } from './../core/middleware/send-email.middleware';
-
+import { ForgotpasswordDto } from './dto/forgot-password.dto';
+import { ResetpasswordDto } from './dto/reset-password.dto';
+import * as bcrypt from 'bcrypt';
 @Injectable()
 export class AuthService {
     constructor(
@@ -17,22 +20,24 @@ export class AuthService {
         private sendEmailMiddleware: SendEmailMiddleware,
     ) { }
 
-    async createUser(authCredentialsDto: AuthCredentialsDto) {
+    async createUser(authCredentialsDto: RegisterCredentialsDto) {
 
         let userToAttempt = await this.findOneByEmail(authCredentialsDto.email);
         if (!userToAttempt) {
             const newUser = new this.userModel({
                 email: authCredentialsDto.email,
-                password: authCredentialsDto.password
+                password: authCredentialsDto.password,
+                emailVerified:true,
+                role:authCredentialsDto.role?authCredentialsDto.role:'user'
             });
             return await newUser.save().then((user) => {
-                const newTokenVerifyEmail = new this.tokenVerifyEmailModel({
-                    userId: user._id,
-                    tokenVerifyEmail: uuidv1()
-                });
-                newTokenVerifyEmail.save();
+                // const newTokenVerifyEmail = new this.tokenVerifyEmailModel({
+                //     userId: user._id,
+                //     tokenVerifyEmail: uuidv1()
+                // });
+                // newTokenVerifyEmail.save();
 
-                this.sendEmailMiddleware.sendEmail(user.email, newTokenVerifyEmail.tokenVerifyEmail, []);
+                // this.sendEmailMiddleware.sendEmail(user.email, newTokenVerifyEmail.tokenVerifyEmail, []);
                 return user.toObject({ versionKey: false });
             });
         } else {
@@ -59,6 +64,73 @@ export class AuthService {
             });
         });
     }
+    
+    async resetPassword(authCredentialsDto: ResetpasswordDto) {
+
+        let userToAttempt = await this.findOneByEmail(authCredentialsDto.email);
+        if (userToAttempt) {
+            
+            if(userToAttempt.verificationCode == authCredentialsDto.verificationCode)
+            {
+                let  numberCode:number = Math.floor(Math.random()*90000) + 10000;
+                let salt =  await bcrypt.genSalt(10);
+                if(!salt)
+                {
+                    return new BadRequestException('Password algorithum is falied');
+                }
+                let password = await bcrypt.hash(authCredentialsDto.password, salt);
+                if(!password)
+                {
+                    return new BadRequestException('Password hash is falied');
+                }
+                
+                await  this.userModel.findByIdAndUpdate(
+                    userToAttempt._id,
+                    { verificationCode:numberCode ,password:password}
+                    );
+                  
+                        let subject:string = "Password changed successfully!";
+                        let html:string="welcome "+userToAttempt.email +" your password is changed successfully!";
+                        this.sendEmailMiddleware.sendEmail(userToAttempt.email, subject, html, []);
+                    return {message:'Reset password successfully!',success:true};
+                   
+              
+
+                
+           
+            }
+            else 
+            {
+                return new BadRequestException('Verification code  incorrect!');
+            }
+            
+            
+            
+        } else {
+            return new BadRequestException('Email not found!');
+        }
+    }
+    async forgotPassword(authCredentialsDto: ForgotpasswordDto) {
+
+        let userToAttempt = await this.findOneByEmail(authCredentialsDto.email);
+        if (userToAttempt) {
+            let  numberCode:number = Math.floor(Math.random()*90000) + 10000;
+           userToAttempt.verificationCode = numberCode.toString();
+           await this.userModel.findByIdAndUpdate(
+            { _id: userToAttempt._id },
+            { verificationCode: numberCode },
+            { new: true });
+            
+
+            let subject:string = "New password requested sent successfully!";
+            let html:string="welcome "+userToAttempt.email +" your new password is requested otp "+numberCode;
+            this.sendEmailMiddleware.sendEmail(userToAttempt.email, subject, html, []);
+                return {message:'Forgot password request sent successfully!',success:true};
+            
+        } else {
+            return new BadRequestException('Email not found!');
+        }
+    }
 
     async findOneByEmail(email: string): Promise<User> {
         return await this.userModel.findOne({ email: email });
@@ -80,6 +152,7 @@ export class AuthService {
     createJwtPayload(user) {
         let data: JwtPayload = {
             _id: user._id,
+            role: user.role,
             email: user.email
         };
         return this.jwtService.sign(data);

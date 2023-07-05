@@ -9,10 +9,16 @@ export class ProductDto {
     @IsString()
     @ApiProperty()
     description: string;
+    
+    @IsNumber()
+    @ApiProperty()
+    validDays: number;
 
     @IsNumber()
     @ApiProperty()
     price: number;
 
-    filePath?: string;
+    @IsNumber()
+    @ApiProperty()
+    fileCount?: number;
 }

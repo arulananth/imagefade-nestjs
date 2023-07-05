@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcrypt';
-
+const { Schema } = mongoose;
 export const UserSchema = new mongoose.Schema({
     email: {
         type: String,
@@ -11,10 +11,28 @@ export const UserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    verificationCode:{
+        type: String
+    },
+    role: {
+        type: String,
+        default:'user',
+        required: true
+    },
     emailVerified: {
         type: Boolean,
         default: false
     },
+    googleId: {
+        type: String,
+    },
+    appleId: {
+        type: String,
+    },
+    membershipId:
+    {
+       type: Schema.Types.ObjectId, ref: 'Price'
+    }
 
 }, { timestamps: true });
 
@@ -55,7 +73,9 @@ export interface User extends mongoose.Document {
     _id: string;
     email: string;
     password: string;
-    emailVerified: Boolean
+    role:string;
+    emailVerified: Boolean;
+    verificationCode:string;
 }
 
 

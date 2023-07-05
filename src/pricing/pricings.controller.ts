@@ -1,17 +1,20 @@
 import { Controller, Post, Body, Get, Param, Put, Delete, UploadedFile, UseInterceptors, Inject, UseGuards } from '@nestjs/common';
 import { diskStorage } from 'multer';
-import { ProductsService } from './products.service';
+import { ProductsService } from './pricing.service';
 import { ProductDto } from './dto/product.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { editFileName, imageFileFilter } from '../core/middleware/file-management.middleware';
-import { Product } from './product.model';
+import { Price } from './pricing.model';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-
+import { Role } from 'src/auth/role.enum';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Roles } from 'src/auth/roles.decorator';
 // @UseGuards(AuthGuard('jwt'))
-@Controller('product')
-@ApiTags('Product')
-export class ProductsController {
+@Controller('pricing')
+@ApiTags('Pricing')
+export class PricingsController {
   constructor( private readonly productsService: ProductsService) { }
 
   // addProduct with file "photo" data sent as formData
@@ -31,34 +34,38 @@ export class ProductsController {
 
   // addProduct without file "photo" data sent as json 
 
-  @ApiOperation({ summary: 'addProduct' })
+  @ApiOperation({ summary: 'addPricing' })
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard,RolesGuard)
   @Post()
-  async addProduct(@Body() productDto: ProductDto, ): Promise<Product> {
-    return await this.productsService.addProduct(productDto);
+  async addProduct(@Body() productDto: ProductDto, ): Promise<Price> {
+    return await this.productsService.addPrice(productDto);
   }
 
-  @ApiOperation({ summary: 'getProducts' })
+  @ApiOperation({ summary: 'getPricings' })
   @Get()
-  async getProducts(): Promise<Product[]> {
-    return await this.productsService.getProducts();
+  async getProducts(): Promise<Price[]> {
+    return await this.productsService.getPricings();
   }
 
-  @ApiOperation({ summary: 'getProductById' })
+  @ApiOperation({ summary: 'getPricingById' })
   @Get(':id')
   getProduct(@Param('id') productId: string) {
-    return this.productsService.getProductById(productId);
+    return this.productsService.getPricedById(productId);
   }
-
-  @ApiOperation({ summary: 'updateCategory' })
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard,RolesGuard)
+  @ApiOperation({ summary: 'updatePricing' })
   @Put(':id')
-  async updateCategory(@Param('id') productId: string, @Body() category: Product): Promise<Product> {
-    return this.productsService.updateProduct(productId, category);
+  async updateCategory(@Param('id') productId: string, @Body() category: Price): Promise<Price> {
+    return this.productsService.updatePricing(productId, category);
   }
-
-  @ApiOperation({ summary: 'removeProduct' })
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard,RolesGuard)
+  @ApiOperation({ summary: 'removePricing' })
   @Delete(':id')
   async removeProduct(@Param('id') productId: string) {
-    await this.productsService.deleteProduct(productId);
+    await this.productsService.deletePricing(productId);
     return null;
   }
 }

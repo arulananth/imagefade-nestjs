@@ -2,6 +2,9 @@ import { Controller, Get, Post, Body, Put, ValidationPipe, Query, Req, Res, Para
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
+import { RegisterCredentialsDto } from './dto/register-credentials.dto';
+import { ForgotpasswordDto } from './dto/forgot-password.dto';
+import { ResetpasswordDto } from './dto/reset-password.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from "./user.model";
 
@@ -10,11 +13,7 @@ import { User } from "./user.model";
 export class AuthController {
   constructor(private authService: AuthService) { }
 
-  @ApiOperation({ summary: 'getAllUsers' })
-  @Get('/getAllUsers')
-  async getAllUsers() {
-    return await this.authService.getAllUsers();
-  }
+  
 
   @ApiOperation({ summary: 'signIn' })
   @Post('/signIn')
@@ -24,8 +23,20 @@ export class AuthController {
 
   @ApiOperation({ summary: 'signUp' })
   @Post('/signUp')
-  async signUp(@Body() authCredentialsDto: AuthCredentialsDto) {
+  async signUp(@Body() authCredentialsDto: RegisterCredentialsDto) {
     return await this.authService.createUser(authCredentialsDto);
+  }
+  
+  @ApiOperation({ summary: 'Forgot Password' })
+  @Post('/forgotpassword')
+  async forgotPassword(@Body() authCredentialsDto: ForgotpasswordDto) {
+    return await this.authService.forgotPassword(authCredentialsDto);
+  }
+
+  @ApiOperation({ summary: 'Reset Password' })
+  @Post('/resetpassword')
+  async resetPassword(@Body() authCredentialsDto: ResetpasswordDto) {
+    return await this.authService.resetPassword(authCredentialsDto);
   }
 
   @ApiOperation({ summary: 'verifyTokenByEmail' })
