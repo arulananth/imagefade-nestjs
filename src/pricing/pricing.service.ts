@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ProductDto } from './dto/product.dto';
+import { PricingDto } from './dto/product.dto';
 import { Price } from './pricing.model';
 import { AppLogger } from '../core/services/logger.service';
 
@@ -30,7 +30,7 @@ export class ProductsService implements OnModuleInit {
    } */
 
   // addProduct without file "photo"
-  async addPrice(productDto: ProductDto): Promise<Price> {
+  async addPrice(productDto: PricingDto): Promise<Price> {
     const newProduct = new this.productModel(productDto);
     await newProduct.save();
     return newProduct.toObject({ versionKey: false });

@@ -54,8 +54,12 @@ export class AuthService {
                     reject(new UnauthorizedException());
                 }
                 if (isMatch) {
+                    let user=userToAttempt;
+                    delete user.password;
+                    delete user.emailVerified;
                     const payload: any = {
                         token: this.createJwtPayload(userToAttempt),
+                        user:user
                     }
                     resolve(payload);
                 } else {

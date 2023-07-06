@@ -6,6 +6,7 @@ import { Role } from 'src/auth/role.enum';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ResetpasswordDto } from '../auth/dto/reset-password.dto';
+import { SubscriptionDto } from './dto/subscription.dto';
 @Controller('users')
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -33,5 +34,12 @@ export class UsersController {
   @Post('/change-password')
   async changePassword(@Request() req: any, @Body() password:ResetpasswordDto) {
     return await this.userService.changePassword(req,password);
+  }
+
+  @UseGuards(JwtAuthGuard,RolesGuard)
+  @ApiOperation({ summary: 'Subscription start' })
+  @Post('/subscription-start')
+  async subscriptionStart(@Request() req: any, @Body() subscription:SubscriptionDto) {
+    return await this.userService.subscriptionStart(req,subscription);
   }
 }

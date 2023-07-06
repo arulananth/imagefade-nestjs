@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Get, Param, Put, Delete, UploadedFile, UseInterceptors, Inject, UseGuards } from '@nestjs/common';
 import { diskStorage } from 'multer';
 import { ProductsService } from './pricing.service';
-import { ProductDto } from './dto/product.dto';
+import { PricingDto } from './dto/product.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { editFileName, imageFileFilter } from '../core/middleware/file-management.middleware';
 import { Price } from './pricing.model';
@@ -38,8 +38,8 @@ export class PricingsController {
   @Roles(Role.Admin)
   @UseGuards(JwtAuthGuard,RolesGuard)
   @Post()
-  async addProduct(@Body() productDto: ProductDto, ): Promise<Price> {
-    return await this.productsService.addPrice(productDto);
+  async addProduct(@Body() PricingDto: PricingDto, ): Promise<Price> {
+    return await this.productsService.addPrice(PricingDto);
   }
 
   @ApiOperation({ summary: 'getPricings' })

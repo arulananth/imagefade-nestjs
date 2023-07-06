@@ -32,6 +32,10 @@ export const UserSchema = new mongoose.Schema({
     membershipId:
     {
        type: Schema.Types.ObjectId, ref: 'Price'
+    },
+    subscriptionId:
+    {
+       type: Schema.Types.ObjectId, ref: 'Subscription'
     }
 
 }, { timestamps: true });

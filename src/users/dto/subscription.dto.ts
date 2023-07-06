@@ -1,7 +1,15 @@
 import { IsString, IsEmail, IsNotEmpty, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class PricingDto {
+export class SubscriptionDto {
+    @IsString()
+    @ApiProperty()
+    plan_id: string;
+
+    @IsString()
+    @ApiProperty()
+    user_id: string;
+
     @IsString()
     @ApiProperty()
     title: string;
@@ -12,11 +20,11 @@ export class PricingDto {
     
     @IsNumber()
     @ApiProperty()
-    validDays: number;
+    price: number;
 
     @IsNumber()
     @ApiProperty()
-    price: number;
+    validDays: number;
 
     @IsNumber()
     @ApiProperty()
