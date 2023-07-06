@@ -13,12 +13,12 @@ import { ResetpasswordDto } from './dto/reset-password.dto';
 import * as bcrypt from 'bcrypt';
 @Injectable()
 export class AuthService {
-    constructor(
+   constructor(
         @InjectModel('User') private userModel: Model<User>,
         @InjectModel('TokenVerifyEmail') private tokenVerifyEmailModel: Model<TokenVerifyEmail>,
         private jwtService: JwtService,
         private sendEmailMiddleware: SendEmailMiddleware,
-    ) { }
+    ) { } 
 
     async createUser(authCredentialsDto: RegisterCredentialsDto) {
 
