@@ -1,10 +1,10 @@
-import { Controller, Post, Body, Get, Param, Request, Put, Delete, UploadedFile, UseInterceptors, Inject, UseGuards } from '@nestjs/common';
+import { Controller,  Post, Body, Get, Param, Request, Put, Delete, UploadedFile, UseInterceptors, Inject, UseGuards } from '@nestjs/common';
 import { diskStorage } from 'multer';
 
 import { FileInterceptor } from '@nestjs/platform-express';
 import { editFileName, imageFileFilter } from '../core/middleware/file-management.middleware';
 import { UploadService } from './upload.service';
-import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation ,ApiConsumes, ApiBody} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { Role } from 'src/auth/role.enum';
 import { RolesGuard } from 'src/auth/roles.guard';
@@ -27,6 +27,23 @@ export class UploadController {
       fileFilter: imageFileFilter,
     }),
   )
+  
+  @ApiBody(
+    
+    {
+    required: true,
+    type: "multipart/form-data",
+    schema: {
+      type: "object",
+      properties: {
+        editFileName: {
+          type: "string",
+          format: "binary",
+        },
+      },
+    },
+  })
+  @ApiConsumes("multipart/form-data")
   async addProductWithPhoto(@UploadedFile() file, @Body() uploadDto: UploadDto, @Request() req): Promise<Upload> {
     return await this.uploadService.addProductWithPhoto(file, uploadDto, req);
   } 
