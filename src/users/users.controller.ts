@@ -26,8 +26,8 @@ export class UsersController {
     return await this.userService.machineHistory();
   }
   @UseGuards(JwtAuthGuard,RolesGuard)
-  @ApiOperation({ summary: 'Subscription by user' })
-  @Post('/subscription-list')
+  @ApiOperation({ summary: 'User history list' })
+  @Post('/history-list')
   async historyListbyId(@Request() req: any, @Body() subscription:SubscriptionDto) {
     return await this.userService.uploadList(req);
   }
