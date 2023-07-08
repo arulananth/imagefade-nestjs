@@ -15,19 +15,7 @@ export class ProductsService implements OnModuleInit {
    
   }
 
-  // addProduct with file "photo"
-
- /*   async addProductWithPhoto(file, productDto: any) : Promise<Product> {
-      let parsedProdut = JSON.parse(productDto.product);
-     console.log('productDto',productDto.product);
  
-     const newProduct = new this.productModel(parsedProdut);
-     if (file) {
-       newProduct.filePath = file.path
-     }
-     await newProduct.save();
-     return newProduct.toObject({ versionKey: false });
-   } */
 
   // addProduct without file "photo"
   async addPrice(productDto: PricingDto): Promise<Price> {

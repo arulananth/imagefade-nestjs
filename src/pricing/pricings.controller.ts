@@ -17,20 +17,7 @@ import { Roles } from 'src/auth/roles.decorator';
 export class PricingsController {
   constructor( private readonly productsService: ProductsService) { }
 
-  // addProduct with file "photo" data sent as formData
- /*  @Post('/withPhoto')
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: './uploads',
-        filename: editFileName,
-      }),
-      fileFilter: imageFileFilter,
-    }),
-  )
-  async addProductWithPhoto(@UploadedFile() file, @Body() productDto: ProductDto, ): Promise<Product> {
-    return await this.productsService.addProductWithPhoto(file, productDto);
-  } */
+  
 
   // addProduct without file "photo" data sent as json 
 

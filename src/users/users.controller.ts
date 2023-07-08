@@ -20,7 +20,11 @@ export class UsersController {
     return await this.userService.mySystemId();
   }
 
- 
+  @ApiOperation({ summary: 'machine-history' })
+  @Get('/user-machine-history')
+  async machineHistory() {
+    return await this.userService.machineHistory();
+  }
 
   @UseGuards(JwtAuthGuard,RolesGuard)
   @ApiOperation({ summary: 'Profile' })

@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 const { Schema } = mongoose;
 export const UploadSchema = new mongoose.Schema({
-  file: { type: Object},
+    filePath: { type: Object},
   user_id:
   {
      type: Schema.Types.ObjectId, ref: 'User'
@@ -16,7 +16,7 @@ export const UploadSchema = new mongoose.Schema({
 
 export interface Upload extends mongoose.Document {
   _id: string;
-  file: object;
+  filePath: object;
   user_id: string;
   subscription_id: string;
   machine_id: number;

@@ -23,6 +23,12 @@ export class UsersService {
     ) { 
        
     } 
+    async machineHistory()
+    {
+        let id = await machineId();
+
+        return await this.uploadModel.find({machine_id:id});
+    }
     async mySystemId() {
         let id = await machineId();
         let start = new Date();
