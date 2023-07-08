@@ -14,13 +14,13 @@ export class UsersController {
   constructor(private userService: UsersService) { }
 
   
-  @Roles(Role.Admin)
-  @UseGuards(JwtAuthGuard,RolesGuard)
-  @ApiOperation({ summary: 'getAllUsers' })
-  @Get('/getAllUsers')
-  async getAllUsers() {
-    return await this.userService.getAllUsers();
+  @ApiOperation({ summary: 'machineId' })
+  @Get('/user-machine-id')
+  async machineId() {
+    return await this.userService.mySystemId();
   }
+
+ 
 
   @UseGuards(JwtAuthGuard,RolesGuard)
   @ApiOperation({ summary: 'Profile' })
@@ -41,5 +41,17 @@ export class UsersController {
   @Post('/subscription-start')
   async subscriptionStart(@Request() req: any, @Body() subscription:SubscriptionDto) {
     return await this.userService.subscriptionStart(req,subscription);
+  }
+  @UseGuards(JwtAuthGuard,RolesGuard)
+  @ApiOperation({ summary: 'Subscription verify' })
+  @Post('/subscription-check')
+  async subscriptionCheck(@Request() req: any, @Body() subscription:SubscriptionDto) {
+    return await this.userService.checkTransaction(req,subscription);
+  }
+  @UseGuards(JwtAuthGuard,RolesGuard)
+  @ApiOperation({ summary: 'Subscription by user' })
+  @Post('/subscription-list')
+  async subscriptionListbyId(@Request() req: any, @Body() subscription:SubscriptionDto) {
+    return await this.userService.subscriptionList(req,subscription);
   }
 }

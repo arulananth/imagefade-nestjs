@@ -2,47 +2,60 @@
 import { Injectable, UnauthorizedException, BadRequestException, ArgumentsHost } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { ResetpasswordDto } from '../auth/dto/reset-password.dto';
-import { SubscriptionDto } from './dto/subscription.dto';
-import {  User, } from '../auth/user.model';
+import { ResetpasswordDto } from 'src/auth/dto/reset-password.dto';
+import { SubscriptionDto } from 'src/users/dto/subscription.dto';
+import {  User } from '../auth/user.model';
+import { Upload } from 'src/upload/upload.model';
 import * as bcrypt from 'bcrypt';
 import { Subscription } from 'src/pricing/pricing.model';
 const https = require("https");
 import { ConfigService } from 'src/core/config/config.service';
 import {machineId, machineIdSync} from 'node-machine-id';
-import { Upload } from 'src/upload/upload.model';
+import { UserblockunblockDto } from './dto/user-block-unblock.dto';	
 
 @Injectable()
-export class UsersService {
+export class AdminService {
     constructor(
         @InjectModel('User') private userModel: Model<User>,
-        @InjectModel('Upload') private uploadModel: Model<Upload>,
+        @InjectModel('Upload') private uploadModel: Model<User>,
         @InjectModel('Subscription') private subscriptionModel: Model <Subscription>,
         private config:ConfigService
+        ) 
+        { 
        
-    ) { 
+        } 
+  
+    async getAllUsers() {
        
-    } 
-    async mySystemId() {
-        let id = await machineId();
-        let start = new Date();
-        start.setHours(0,0,0,0);
-        let end = new Date();
-        end.setHours(23,59,59,999);
-        let todayCount  = await this.uploadModel.countDocuments({machine_id:id,createdAt:{$gte: start, $lt: end}})
-        return {id: id, todayCount: todayCount};
+        return await this.userModel.find();
     }
-    
-    async myData(payload) {
-        let id = await machineId();
-        console.log("machine "+id)
-        return await this.userModel.findOne({_id:payload.user.user._id})
-        .populate("membershipId")
-        .populate("subscriptionId");
+    async getAllHistory() {
+       
+        return await this.uploadModel.find().populate("user_id");
     }
-    async subscriptionList(payload,authCredentialsDto:SubscriptionDto) 
+    async dashboardData() {
+        let usersCount:any = await this.userModel.countDocuments();
+        let uploadCount:any = await this.uploadModel.countDocuments();
+        let subscriptionCount:any= await this.subscriptionModel.find({status:1}).countDocuments();
+         let subscriptionSum:any= await this.subscriptionModel.aggregate([  
+            { $match: {status:"1"}},
+            { $group:
+             { _id : null, sum : { $sum: "$price" } }
+          }])
+          
+
+        return {
+            usersCount: usersCount,
+            uploadCount: uploadCount,
+            subscriptionCount: subscriptionCount,
+            subscriptionTotal:subscriptionSum
+        }
+    }
+    async subscriptionList(authCredentialsDto:SubscriptionDto) 
     {
-        let transaction:any= await this.subscriptionModel.find({user_id:payload.user.user.id}).sort({"createdAt":-1}).populate("user_id");
+        let transaction:any= await this.subscriptionModel.find({status:1}).sort({"createdAt":-1})
+        .populate("user_id")
+        .populate("plan_id");
          return transaction;
     }
     async addDays (days, date = new Date()) {  
@@ -83,7 +96,7 @@ export class UsersService {
        
     }
    
-    async  checkTransaction(payload:any,subscription:any)
+    async  checkTransaction(subscription:any)
     {
         let subscriptionId:string=subscription.subscriptionId;
         let subscriptionCheck:any= await this.subscriptionModel.findOne({_id:subscriptionId});
@@ -177,46 +190,26 @@ export class UsersService {
         });
     }
    
-    async changePassword(payload,authCredentialsDto:ResetpasswordDto) {
-       
-        
-
-        let userToAttempt = await this.userModel.findOne({_id:payload.user.user._id});
-        if (userToAttempt) {
-            
-            if(userToAttempt.email == payload.user.user.email)
-            {
-               
-                let salt =  await bcrypt.genSalt(10);
-                if(!salt)
-                {
-                    return new BadRequestException('Password algorithum is falied');
-                }
-                let password = await bcrypt.hash(authCredentialsDto.password, salt);
-                if(!password)
-                {
-                    return new BadRequestException('Password hash is falied');
-                }
-                
-                await  this.userModel.findByIdAndUpdate(
-                    userToAttempt._id,
-                    { password:password}
-                    );
-                  
-                       
-                    return {message:'Password changed successfully!',success:true};
-               
-            }
-            else 
-            {
-                return new BadRequestException('Verification code  incorrect!');
-            }
-            
-            
-            
-        } else {
-            return new BadRequestException('Email not found!');
+    async userBlocUnBlock(payload:UserblockunblockDto) 
+    {
+        let userToAttempt = await this.userModel.findOne({_id:payload.user_id});
+        if(!userToAttempt)
+        {
+                    throw new BadRequestException('Invalid user!');
         }
-    
-}
+        let emailVerified=true;
+       
+            
+            if(userToAttempt.emailVerified)
+            {
+                emailVerified=false;
+            }
+             await  this.userModel.findByIdAndUpdate(
+                    userToAttempt._id,
+                    { emailVerified:emailVerified}
+                    );
+                 
+        return {message:'User status successfully updated!',success:true};
+       
+    }
 }

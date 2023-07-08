@@ -24,9 +24,37 @@ export class SubscriptionDto {
 
     @IsNumber()
     @ApiProperty()
+    coinPrice: number;
+
+    @IsNumber()
+    @ApiProperty()
     validDays: number;
 
     @IsNumber()
     @ApiProperty()
     fileCount?: number;
+
+    @IsString()
+    @ApiProperty()
+    network: string;
+
+    @IsString()
+    @ApiProperty()
+    address: string;
+
+    @IsString()
+    @ApiProperty()
+    blockchain: string;
+
+    @IsString()
+    @ApiProperty()
+    transactionId: string;
+
+    @IsString()
+    @ApiProperty()
+    status: string;
+
+    @IsString()
+    @ApiProperty()
+    lastVerify: Date;
 }

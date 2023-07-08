@@ -7,7 +7,7 @@ import { AppLogger } from '../core/services/logger.service';
 
 @Injectable()
 export class ProductsService implements OnModuleInit {
-  constructor(@InjectModel('Product') private readonly productModel: Model<Price>, private appLogger: AppLogger
+  constructor(@InjectModel('Price') private readonly productModel: Model<Price>, private appLogger: AppLogger
   ) { }
 
   onModuleInit() {

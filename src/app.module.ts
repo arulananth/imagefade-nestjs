@@ -12,6 +12,7 @@ import { PagesModule } from './pages/pages.module';
 import { RolesGuard } from './auth/roles.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
  
@@ -32,7 +33,8 @@ import { PassportModule } from '@nestjs/passport';
     WinstonModule,
     UsersModule,
     UploadModule,
-    PagesModule
+    PagesModule,
+    AdminModule
   ],
   controllers: [],
   providers: [

@@ -11,6 +11,7 @@ import { SendEmailMiddleware } from './../core/middleware/send-email.middleware'
 import { ForgotpasswordDto } from './dto/forgot-password.dto';
 import { ResetpasswordDto } from './dto/reset-password.dto';
 import * as bcrypt from 'bcrypt';
+
 @Injectable()
 export class AuthService {
    constructor(
@@ -27,6 +28,7 @@ export class AuthService {
             const newUser = new this.userModel({
                 email: authCredentialsDto.email,
                 password: authCredentialsDto.password,
+                name : authCredentialsDto.name,
                 emailVerified:true,
                 role:authCredentialsDto.role?authCredentialsDto.role:'user'
             });
@@ -48,6 +50,8 @@ export class AuthService {
     async validateUserByPassword(authCredentialsDto: AuthCredentialsDto) {
         let userToAttempt: any = await this.findOneByEmail(authCredentialsDto.email);
         if (!userToAttempt) throw new BadRequestException('Email not found !');
+        if(!userToAttempt.emailVerified)
+        throw new BadRequestException('User account blocked by admin!');
         return new Promise((resolve, reject) => {
             userToAttempt.checkPassword(authCredentialsDto.password, (err, isMatch) => {
                 if (err) {

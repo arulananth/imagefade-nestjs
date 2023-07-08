@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PricingsController } from './pricings.controller';
 import { ProductsService } from './pricing.service';
-import { PriceSchema } from './pricing.model';
+import { PriceSchema, SubscriptionSchema } from './pricing.model';
 import { MulterModule } from '@nestjs/platform-express';
 import { WinstonModule,  } from 'nest-winston';
 import { AppLogger } from '../core/services/logger.service';
@@ -12,7 +12,9 @@ import { AppLogger } from '../core/services/logger.service';
     MulterModule.register({
       dest: './uploads',
     }),
-    MongooseModule.forFeature([{ name: 'Product', schema: PriceSchema }]),
+    MongooseModule.forFeature([
+      { name: 'Price', schema: PriceSchema },
+      { name :'Subscription', schema: SubscriptionSchema}]),
     WinstonModule
   ],
   controllers: [PricingsController],
