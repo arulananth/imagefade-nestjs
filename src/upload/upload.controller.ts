@@ -36,7 +36,7 @@ export class UploadController {
     schema: {
       type: "object",
       properties: {
-        editFileName: {
+        file: {
           type: "string",
           format: "binary",
         },
@@ -44,7 +44,7 @@ export class UploadController {
     },
   })
   @ApiConsumes("multipart/form-data")
-  async addProductWithPhoto(@UploadedFile() file, @Body() uploadDto: UploadDto, @Request() req): Promise<Upload> {
-    return await this.uploadService.addProductWithPhoto(file, uploadDto, req);
+  async addProductWithPhoto(@UploadedFile() file,  @Request() req): Promise<Upload> {
+    return await this.uploadService.addProductWithPhoto(file, req);
   } 
 }
