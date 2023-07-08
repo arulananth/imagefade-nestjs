@@ -23,6 +23,10 @@ export class UsersService {
     ) { 
        
     } 
+    async uploadList(req:any)
+    {
+        return await this.uploadModel.find({user_id:req.user.user._id}).populate("user_id");
+    }
     async machineHistory()
     {
         let id = await machineId();

@@ -13,6 +13,7 @@ import { Roles } from 'src/auth/roles.decorator';
 import { Upload } from './upload.model';
 import { UploadDto } from './dto/upload.dto';
 @Controller('upload')
+@ApiTags('Upload')
 export class UploadController {
     constructor(private uploadService:UploadService) { }
     // addProduct with file "photo" data sent as formData
