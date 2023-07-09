@@ -5,9 +5,12 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { HttpExceptionFilter } from './core/filters/http.filter';
 import { FallbackExceptionFilter } from './core/filters/fallback.filter';
-
+import { join } from 'path';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+    prefix: '/uploads/',
+  });
   app.enableCors();
   // app.setGlobalPrefix('api');
   app.useGlobalFilters(

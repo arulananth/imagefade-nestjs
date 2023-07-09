@@ -14,7 +14,7 @@ export class UploadService {
    
     
 
-    async addProductWithPhoto(file,  req:any) : Promise<Upload> {
+    async addProductWithPhoto(file,  req:any, bReq:any) : Promise<Upload> {
       let parsedProdut:any= {}
       let id =await machineId();
       let upload=false;
@@ -24,16 +24,16 @@ export class UploadService {
       start.setHours(0,0,0,0);
       let end = new Date();
       end.setHours(23,59,59,999);
-      if(req && req.user)
+      if(bReq && bReq.user_id)
       {
-         user_id = req.user.user._id;
+         user_id = bReq.user_id;
       }
-      if(user_id!=0)
+      if(user_id)
       {
          parsedProdut.user_id = user_id;
          
           let findTodaySubscription =  await this.SubscriptionModel.countDocuments({user_id:user_id,createdAt:{$gte: start, $lt: end}});
-          finduserSubscription =  await this.SubscriptionModel.findOne({user_id:user_id});
+          finduserSubscription =  await this.SubscriptionModel.findOne({user_id:user_id}).sort({createdAt:-1});
          if(finduserSubscription && finduserSubscription.fileCount>0)
          {
             upload=true;
@@ -66,10 +66,11 @@ export class UploadService {
        newProduct.deepNudeFile = file.path
      }
      await newProduct.save();
-     if(user_id!=0)
+     if(user_id)
      {
-       await  finduserSubscription.findByIdAndUpdate(newProduct._id,
-        {$inc: {fileCount:-1}}
+      console.log(user_id)
+       this.SubscriptionModel.updateOne({subscription_id:newProduct.subscription_id},
+        {$set:{$inc: {fileCount:-1}}}
         )
      }
      return newProduct.toObject({ versionKey: false });

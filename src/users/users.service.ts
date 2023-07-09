@@ -114,10 +114,13 @@ export class UsersService {
         
         
         let transactionLast:any= await this.subscriptionModel.findOne({user_id:user_id,status:1}).sort({createdAt:-1});
+        let currentSub=await this.subscriptionModel.findOne({_id:subscriptionId});
         let expireDateLast= new Date();
+        let exitCount=0;
         if(transactionLast)
         {
             expireDateLast = transactionLast.expireDate;
+            exitCount = transactionLast.fileCount;
         }
        
         expireDateLast = await this.addDays(validDays,new Date(expireDateLast));
@@ -165,11 +168,12 @@ export class UsersService {
                     })
                     
                 }
-               
+                   
                     objCall.subscriptionModel.findByIdAndUpdate(subscriptionId,{
                         status:status,
                         lastVerify: new Date(),
                         cryptoData:apiResponse,
+                        fileCount:exitCount+currentSub.fileCount,
                         expireDate:expireDateLast
                     }).then(function(doc,err){
                         console.log(err)

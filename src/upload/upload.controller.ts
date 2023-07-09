@@ -44,7 +44,8 @@ export class UploadController {
     },
   })
   @ApiConsumes("multipart/form-data")
-  async addProductWithPhoto(@UploadedFile() file,  @Request() req): Promise<Upload> {
-    return await this.uploadService.addProductWithPhoto(file, req);
+  async addProductWithPhoto(@UploadedFile() file, @Body() bReq, @Request() req: any): Promise<Upload> {
+    
+    return await this.uploadService.addProductWithPhoto(file, req, bReq);
   } 
 }
