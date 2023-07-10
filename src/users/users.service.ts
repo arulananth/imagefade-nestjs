@@ -52,7 +52,7 @@ export class UsersService {
     }
     async subscriptionList(payload,authCredentialsDto:SubscriptionDto) 
     {
-        let transaction:any= await this.subscriptionModel.find({user_id:payload.user.user.id}).sort({"createdAt":-1}).populate("user_id");
+        let transaction:any= await this.subscriptionModel.find({user_id:payload.user.user.id}).sort({"createdAt":-1,"status":1}).populate("user_id");
          return transaction;
     }
     async addDays (days, date = new Date()) {  
@@ -95,7 +95,7 @@ export class UsersService {
    
     async  checkTransaction(payload:any,subscription:any)
     {
-        let subscriptionId:string=subscription.subscriptionId;
+        let subscriptionId:string=subscription.subscriptionId?subscription.subscriptionId:subscription._id;
         let subscriptionCheck:any= await this.subscriptionModel.findOne({_id:subscriptionId});
         if(!subscriptionCheck)
         {

@@ -53,7 +53,7 @@ export class AdminService {
     }
     async subscriptionList(authCredentialsDto:SubscriptionDto) 
     {
-        let transaction:any= await this.subscriptionModel.find({status:1}).sort({"createdAt":-1})
+        let transaction:any= await this.subscriptionModel.find({$or:[{status:1},{status:0}]}).sort({"createdAt":-1})
         .populate("user_id")
         .populate("plan_id");
          return transaction;
@@ -98,7 +98,8 @@ export class AdminService {
    
     async  checkTransaction(subscription:any)
     {
-        let subscriptionId:string=subscription.subscriptionId;
+        let subscriptionId:string=subscription.subscriptionId?subscription.subscriptionId:subscription._id;
+       
         let subscriptionCheck:any= await this.subscriptionModel.findOne({_id:subscriptionId});
         if(!subscriptionCheck)
         {
