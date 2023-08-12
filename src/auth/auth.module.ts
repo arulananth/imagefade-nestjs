@@ -31,11 +31,11 @@ import { SendEmailMiddleware } from '../core/middleware/send-email.middleware';
     MailerModule.forRootAsync({
       useFactory: () => ({
         transport: {
-          host: 'smtp.hostinger.com', port: 465, secure: true,
-          auth: { user: 'no-reply@crm.jirass.co.in', pass: 'Four@6124@' }
+          host: '*******', port: 111, secure: true,
+          auth: { user: '******', pass: '********' }
         },
         defaults: {
-          from: '"DeepNude VIP" <no-reply@crm.jirass.co.in>',
+          from: '"DeepNude VIP" <no-reply@********>',
         },
       }),
     }),
